@@ -1,15 +1,15 @@
 class Product:
 
     def __init__(self, name, price, quantity):
-        if not (isinstance(name, str) and name != ""):
+        if not (isinstance(name, str) and name):
             raise ValueError(f"Name expected, string can't be empty")
         self.name = name
         if not (isinstance(price, (int, float)) and price > 0):
             raise ValueError(f"Positive price expected, can't be "
                              f"negative")
         self.price = price
-        if not (isinstance(quantity, int) and quantity > 0):
-            raise ValueError(f"Quantity needs to be a positive "
+        if not (isinstance(quantity, int) and quantity >= 0):
+            raise ValueError(f"Quantity needs to be a non-negative "
                              f"number")
         self.quantity = quantity
         self.active = True
@@ -38,10 +38,13 @@ class Product:
     def buy(self, quantity):
         if not self.active:
             raise Exception("Product is not active")
+        if quantity <= 0:
+            raise ValueError("Quantity to buy must be greater than "
+                             "zero")
         if quantity > self.quantity:
             raise Exception(f"There are not enough in stock, "
-                             f"the available quantity is"
-                             f" {self.quantity}")
+                            f"the available quantity: "
+                            f"{self.quantity}")
         total_price = self.price * quantity
         self.set_quantity(self.quantity - quantity)
         return total_price
