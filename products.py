@@ -1,6 +1,6 @@
 class Product:
-
     def __init__(self, name, price, quantity):
+        """Create the instance variables (active is set to True)."""
         if not (isinstance(name, str) and name):
             raise ValueError(f"Name expected, string can't be empty")
         self.name = name
@@ -15,36 +15,45 @@ class Product:
         self.active = True
 
     def get_quantity(self):
+        """Getter function for quantity. Return the quantity."""
         return self.quantity
 
     def set_quantity(self, quantity):
+        """Setter function for quantity. If quantity reaches 0,
+        deactivate the product."""
         self.quantity = quantity
         if self.quantity == 0:
             self.deactivate()
 
     def is_active(self):
+        """Getter function for active. Return True if the product
+        is active, otherwise False."""
         return self.active
 
     def activate(self):
+        """Activate the product."""
         self.active = True
 
     def deactivate(self):
+        """Deactivate the product."""
         self.active = False
 
     def show(self):
+        """Return a string that represents the product."""
         return (f"{self.name}, Price: {self.price}, Quantity: "
                 f"{self.quantity}")
 
     def buy(self, quantity):
+        """Buy a given quantity of the product. Return the total
+        price (float) of the purchase. Update the quantity of the
+        product."""
         if not self.active:
             raise Exception("Product is not active")
         if quantity <= 0:
-            raise ValueError("Quantity to buy must be greater than "
-                             "zero")
+            raise ValueError("Quantity to buy must be a "
+                             "non-negative number")
         if quantity > self.quantity:
-            raise Exception(f"There are not enough in stock, "
-                            f"the available quantity: "
-                            f"{self.quantity}")
+            raise Exception(f"Quantity larger than available stock")
         total_price = self.price * quantity
         self.set_quantity(self.quantity - quantity)
         return total_price
