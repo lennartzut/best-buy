@@ -1,5 +1,10 @@
 class Store:
+    """A class to represent a store that contains a list of
+    products and allows various operations on them.
+    """
     def __init__(self, product_list):
+        """Constructs all the necessary attributes for the Store
+        object."""
         self.product_list = product_list
 
     def add_product(self, product):

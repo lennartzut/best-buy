@@ -1,4 +1,5 @@
 class Product:
+    """A class to represent a product in the store."""
     def __init__(self, name, price, quantity):
         """Create the instance variables (active is set to True)."""
         if not (isinstance(name, str) and name):
