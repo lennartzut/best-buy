@@ -32,8 +32,8 @@ class Product:
         self.active = False
 
     def show(self):
-        return (f"{self.name}, Price: {self.price}, Quantity:"
-                f" {self.quantity}")
+        return (f"{self.name}, Price: {self.price}, Quantity: "
+                f"{self.quantity}")
 
     def buy(self, quantity):
         if not self.active:
