@@ -26,5 +26,11 @@ class Store:
     def order(self, shopping_list):
         total_price = 0.0
         for product, quantity in shopping_list:
+            if not product.is_active():
+                raise ValueError(f"Product {product.name} is not "
+                                 f"active")
+            if quantity > product.get_quantity():
+                raise ValueError(f"Not enough quantity for "
+                                 f"product {product.name}")
             total_price += product.buy(quantity)
         return total_price
