@@ -68,18 +68,13 @@ def make_order(store_inst):
                   "what exists")
 
 
-def quit_program():
-    """End program"""
-    exit()
-
-
 def start(store_inst):
     """Prompt user with menu options. Ask user to choose action."""
     options_table = {
         "1": list_store_products,
         "2": show_total_amount,
         "3": make_order,
-        "4": quit_program
+        "4": exit
     }
 
     while True:
