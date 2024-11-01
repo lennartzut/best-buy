@@ -58,3 +58,53 @@ class Product:
         total_price = self.price * quantity
         self.set_quantity(self.quantity - quantity)
         return total_price
+
+
+class NonStockedProduct(Product):
+    """A class to represent a non-stocked product, such as a
+    digital item."""
+    def __init__(self, name, price):
+        """Initialize the non-stocked product with a quantity of
+        0."""
+        super().__init__(name, price, quantity=0)
+
+    def set_quantity(self, quantity):
+        """Override the set_quantity method to prevent changing
+        the quantity."""
+        raise Exception("Cannot set quantity for a non-stocked "
+                        "product")
+
+    def buy(self, quantity):
+        """Override the buy method to allow unlimited purchases."""
+        if not self.is_active():
+            raise Exception("Product is not active")
+        if quantity <= 0:
+            raise ValueError("Quantity to buy must be a positive "
+                             "number")
+        return self.price * quantity
+
+    def show(self):
+        """Return a string that represents the non-stocked
+        product."""
+        return f"{self.name} (Digital Product), Price: {self.price}, Available: Unlimited"
+
+
+class LimitedProduct(Product):
+    """A class to represent a limited product that can only be purchased X times in an order."""
+    def __init__(self, name, price, quantity, max_quantity_per_order):
+        """Initialize the limited product with a max quantity per order."""
+        super().__init__(name, price, quantity)
+        if not (isinstance(max_quantity_per_order, int) and max_quantity_per_order > 0):
+            raise ValueError("Max quantity per order must be a positive integer")
+        self.max_quantity_per_order = max_quantity_per_order
+
+    def buy(self, quantity):
+        """Override the buy method to enforce max quantity per order."""
+        if quantity > self.max_quantity_per_order:
+            raise Exception(f"Cannot buy more than {self.max_quantity_per_order} of this item in one order")
+        return super().buy(quantity)
+
+    def show(self):
+        """Return a string that represents the limited product."""
+        return (f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, "
+                f"Max per order: {self.max_quantity_per_order}")
