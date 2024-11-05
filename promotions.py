@@ -12,7 +12,7 @@ class Promotion(ABC):
         pass
 
 
-class DiscountPercent(Promotion):
+class PercentDiscount(Promotion):
     """Class representing percentage discount promotion."""
     def __init__(self, name, percent):
         super().__init__(name)
