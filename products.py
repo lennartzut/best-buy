@@ -14,6 +14,7 @@ class Product:
                              f"number")
         self.quantity = quantity
         self.active = True
+        self.promotion = None
 
     def get_quantity(self):
         """Getter function for quantity. Return the quantity."""
@@ -39,10 +40,21 @@ class Product:
         """Deactivate the product."""
         self.active = False
 
+    def set_promotion(self, promotion):
+        """Setter function for promotion."""
+        self.promotion = promotion
+
+    def get_promotion(self):
+        """Getter function for promotion."""
+        return self.promotion
+
     def show(self):
-        """Return a string that represents the product."""
-        return (f"{self.name}, Price: {self.price}, Quantity: "
-                f"{self.quantity}")
+        """Return a string that represents the product, including
+        any promotion if available."""
+        promo_text = f", Promotion: {self.promotion.name}" if (
+            self.promotion) else ""
+        return (f"{self.name}, Price: {self.price}, Quantity:"
+                f" {self.quantity}{promo_text}")
 
     def buy(self, quantity):
         """Buy a given quantity of the product. Return the total
@@ -51,11 +63,18 @@ class Product:
         if not self.active:
             raise Exception("Product is not active")
         if quantity <= 0:
-            raise ValueError("Quantity to buy must be a "
-                             "non-negative number")
+            raise ValueError(
+                "Quantity to buy must be a non-negative number")
         if quantity > self.quantity:
-            raise Exception(f"Quantity larger than available stock")
-        total_price = self.price * quantity
+            raise Exception("Quantity larger than available stock")
+        if self.promotion:
+            print(
+                f"Applying promotion: {self.promotion.name} to"
+                f" {self.name}")
+            total_price = self.promotion.apply_promotion(self,
+                                                         quantity)
+        else:
+            total_price = self.price * quantity
         self.set_quantity(self.quantity - quantity)
         return total_price
 
@@ -79,15 +98,25 @@ class NonStockedProduct(Product):
         if not self.is_active():
             raise Exception("Product is not active")
         if quantity <= 0:
-            raise ValueError("Quantity to buy must be a positive "
-                             "number")
-        return self.price * quantity
+            raise ValueError(
+                "Quantity to buy must be a positive number")
+        if self.promotion:
+            print(
+                f"Applying promotion: {self.promotion.name} to"
+                f" {self.name}")
+            total_price = self.promotion.apply_promotion(self,
+                                                         quantity)
+        else:
+            total_price = self.price * quantity
+        return total_price
 
     def show(self):
         """Return a string that represents the non-stocked
-        product."""
-        return (f"{self.name} (Digital Product), Price: "
-                f"{self.price}, Available: Unlimited")
+        product, including any promotion."""
+        promo_text = f", Promotion: {self.promotion.name}" if (
+            self.promotion) else ""
+        return (f"{self.name}, Price: {self.price}, "
+                f"Available: Unlimited{promo_text}")
 
 
 class LimitedProduct(Product):
@@ -113,7 +142,8 @@ class LimitedProduct(Product):
         return super().buy(quantity)
 
     def show(self):
-        """Return a string that represents the limited product."""
-        return (f"{self.name}, Price: {self.price}, Quantity:"
-                f" {self.quantity},"
-                f"Max per order: {self.max_quantity_per_order}")
+        """Return a string that represents the limited product,
+        including any promotion."""
+        base_show = super().show()
+        return (f"{base_show}, Max per order:"
+                f" {self.max_quantity_per_order}")
