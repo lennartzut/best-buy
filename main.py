@@ -64,8 +64,8 @@ def make_order(store_inst):
             print(f"Order made! Total payment: $"
                   f"{total_payment:.2f}")
         except ValueError:
-            print("Error while making order! Quantity larger than "
-                  "what exists")
+            print("Error while making order! Ordered quantity "
+                  "exceeds stock availability")
 
 
 def start(store_inst):
@@ -90,12 +90,13 @@ def main():
     """Main function to run the program."""
     # setup initial stock of inventory
     product_list = [
-        products.Product("MacBook Air M2", price=1450,
-                         quantity=100),
-        products.Product("Bose QuietComfort Earbuds",
-                         price=250, quantity=500),
-        products.Product("Google Pixel 7", price=500,
-                         quantity=250)
+        products.Product("MacBook Air M2", price=1450, quantity=100),
+        products.Product("Bose QuietComfort Earbuds", price=250,
+                         quantity=500),
+        products.Product("Google Pixel 7", price=500, quantity=250),
+        products.NonStockedProduct("Windows License", price=125),
+        products.LimitedProduct("Shipping", price=10, quantity=250,
+                                max_quantity_per_order=1)
     ]
     best_buy = store.Store(product_list)
     start(best_buy)
