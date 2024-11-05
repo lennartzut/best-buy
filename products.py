@@ -86,25 +86,34 @@ class NonStockedProduct(Product):
     def show(self):
         """Return a string that represents the non-stocked
         product."""
-        return f"{self.name} (Digital Product), Price: {self.price}, Available: Unlimited"
+        return (f"{self.name} (Digital Product), Price: "
+                f"{self.price}, Available: Unlimited")
 
 
 class LimitedProduct(Product):
-    """A class to represent a limited product that can only be purchased X times in an order."""
+    """A class to represent a limited product that can only be
+    purchased X times in an order."""
     def __init__(self, name, price, quantity, max_quantity_per_order):
-        """Initialize the limited product with a max quantity per order."""
+        """Initialize the limited product with a max quantity per
+        order."""
         super().__init__(name, price, quantity)
-        if not (isinstance(max_quantity_per_order, int) and max_quantity_per_order > 0):
-            raise ValueError("Max quantity per order must be a positive integer")
+        if not (isinstance(max_quantity_per_order, int) and
+                max_quantity_per_order > 0):
+            raise ValueError("Max quantity per order must be a "
+                             "positive integer")
         self.max_quantity_per_order = max_quantity_per_order
 
     def buy(self, quantity):
-        """Override the buy method to enforce max quantity per order."""
+        """Override the buy method to enforce max quantity per
+        order."""
         if quantity > self.max_quantity_per_order:
-            raise Exception(f"Cannot buy more than {self.max_quantity_per_order} of this item in one order")
+            raise Exception(f"Cannot buy more than "
+                            f"{self.max_quantity_per_order} of "
+                            f"this item in one order")
         return super().buy(quantity)
 
     def show(self):
         """Return a string that represents the limited product."""
-        return (f"{self.name}, Price: {self.price}, Quantity: {self.quantity}, "
+        return (f"{self.name}, Price: {self.price}, Quantity:"
+                f" {self.quantity},"
                 f"Max per order: {self.max_quantity_per_order}")
