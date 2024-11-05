@@ -1,3 +1,6 @@
+import products
+
+
 class Store:
     """A class to represent a store that contains a list of
     products and allows various operations on them.
@@ -36,9 +39,22 @@ class Store:
         total price of the order"""
         total_price = 0.0
         for product, quantity in shopping_list:
-            if not product.is_active():
-                raise ValueError(f"Product is not active")
-            if quantity > product.get_quantity():
-                raise ValueError(f"Not enough quantity available")
-            total_price += product.buy(quantity)
+            try:
+                if not product.is_active():
+                    raise ValueError(
+                        f"Product '{product.name}' is not active "
+                        f"and cannot be ordered.")
+                if isinstance(product, products.NonStockedProduct):
+                    total_price += product.buy(quantity)
+                elif quantity > product.get_quantity():
+                    raise ValueError(
+                        f"Not enough quantity available for "
+                        f"'{product.name}'. Available:"
+                        f" {product.get_quantity()}, Requested:"
+                        f" {quantity}")
+                else:
+                    total_price += product.buy(quantity)
+            except ValueError as e:
+                print(f"Error: {str(e)}")
+                continue
         return total_price
