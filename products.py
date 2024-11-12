@@ -93,6 +93,10 @@ class NonStockedProduct(Product):
         raise Exception("Cannot set quantity for a non-stocked "
                         "product")
 
+    def get_quantity(self):
+        """Override to indicate that the product is always available (unlimited)."""
+        return float('inf')
+
     def buy(self, quantity):
         """Override the buy method to allow unlimited purchases."""
         if not self.is_active():

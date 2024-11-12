@@ -32,41 +32,99 @@ def show_total_amount(store_inst):
     print(f"Total of {total_amount} items in store")
 
 
-def make_order(store_inst):
-    """Ask user to order product and quantity. Create a shopping
-    list. Return the total payable amount."""
-    products_in_store = store_inst.get_all_products()
-    shopping_list = []
-    list_store_products(store_inst)
-    print("When you want to finish order, enter empty text.")
+def get_valid_product_choice(products_in_store):
+    """Prompt user for a valid product choice from the list of available products."""
     while True:
-        product_order = (input("Which product # do "
-                               "you want? "))
-        order_amount = (input("What amount do you "
-                              "want? "))
-        if product_order == "" or order_amount == "":
-            break
+        product_order = input("Which product # do you want? ")
+        if product_order == "":
+            return None
         try:
             product_order = int(product_order) - 1
-            order_amount = int(order_amount)
-            if product_order < 0 or product_order >= len(
-                    products_in_store):
-                continue
-            shopping_list.append((products_in_store[
-                                      product_order],
-                                  order_amount))
-            print("Product added to list!\n")
+            if 0 <= product_order < len(products_in_store):
+                return products_in_store[product_order]
+            else:
+                print("Invalid product number, please try again.")
         except ValueError:
-            print("Error adding product!\n")
+            print("Invalid input, please enter a number.")
+
+
+def get_valid_quantity(product):
+    """Prompt user for a valid quantity for the selected product."""
+    while True:
+        order_amount = input(
+            f"What amount do you want for '{product.name}'? ")
+        if order_amount == "":
+            print("Please enter a valid quantity.")
+            continue
+        try:
+            order_amount = int(order_amount)
+            if order_amount <= 0:
+                print(
+                    "Quantity must be greater than zero, please try again.")
+                continue
+            if isinstance(product,
+                          products.LimitedProduct) and order_amount > product.max_quantity_per_order:
+                print(
+                    f"Cannot buy more than {product.max_quantity_per_order} units of '{product.name}' per order.")
+                continue
+            if product.get_quantity() < order_amount:
+                print(
+                    f"Not enough quantity available for '{product.name}'. Available: {product.get_quantity()}, Requested: {order_amount}")
+                continue
+            return order_amount
+        except ValueError:
+            print("Invalid quantity, please enter a valid number.")
+
+
+def get_valid_quantity_unlimited(product):
+    """Prompt user for a valid quantity for the selected product with unlimited availability."""
+    while True:
+        order_amount = input(
+            f"What amount do you want for '{product.name}'? (Unlimited quantity available) ")
+        if order_amount == "":
+            print("Please enter a valid quantity.")
+            continue
+        try:
+            order_amount = int(order_amount)
+            if order_amount <= 0:
+                print(
+                    "Quantity must be greater than zero, please try again.")
+                continue
+            return order_amount
+        except ValueError:
+            print("Invalid quantity, please enter a valid number.")
+
+
+def make_order(store_inst):
+    """Ask user to order product and quantity. Create a shopping list. Return the total payable amount."""
+    products_in_store = store_inst.get_all_products()
+    shopping_list = []
+
+    list_store_products(store_inst)
+    print("When you want to finish order, enter empty text.")
+
+    while True:
+        product = get_valid_product_choice(products_in_store)
+        if product is None:
+            break
+
+        # Check if product is a NonStockedProduct to allow unlimited purchases
+        if isinstance(product, products.NonStockedProduct):
+            order_amount = get_valid_quantity_unlimited(product)
+        else:
+            order_amount = get_valid_quantity(product)
+
+        shopping_list.append((product, order_amount))
+        print("Product added to list!\n")
+
     if shopping_list:
         try:
             total_payment = store_inst.order(shopping_list)
             print("********")
-            print(f"Order made! Total payment: $"
-                  f"{total_payment:.2f}")
+            print(f"Order made! Total payment: ${total_payment:.2f}")
         except ValueError:
-            print("Error while making order! Ordered quantity "
-                  "exceeds stock availability")
+            print(
+                "Error while making order! Quantity larger than what exists")
 
 
 def start(store_inst):
@@ -80,11 +138,13 @@ def start(store_inst):
 
     while True:
         show_menu()
-        choice = input(f"Please choose a number: ")
+        choice = input("Please choose a number: ")
         action = options_table.get(choice)
 
         if action:
             action(store_inst)
+        else:
+            print("Invalid choice, please try again.")
 
 
 def main():
@@ -98,7 +158,7 @@ def main():
         products.NonStockedProduct("Windows License", price=125),
         products.LimitedProduct("Shipping", price=10, quantity=250,
                                 max_quantity_per_order=1)
-        ]
+    ]
 
     # Create promotion catalog
     second_half_price = promotions.SecondHalfPrice(
@@ -111,6 +171,7 @@ def main():
     product_list[0].set_promotion(second_half_price)
     product_list[1].set_promotion(third_one_free)
     product_list[3].set_promotion(thirty_percent)
+
     best_buy = store.Store(product_list)
     start(best_buy)
 
