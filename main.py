@@ -4,7 +4,9 @@ import store
 
 
 def show_menu():
-    """Display menu options."""
+    """
+    Display menu options to the user.
+    """
     menu_options = [
         "1. List all products in store",
         "2. Show total amount in store",
@@ -18,7 +20,12 @@ def show_menu():
 
 
 def list_store_products(store_inst):
-    """List products in store."""
+    """
+    List all products available in the store.
+
+    Parameters:
+    store_inst (Store): The store instance containing products.
+    """
     products_in_store = store_inst.get_all_products()
     print("------")
     for num, product in enumerate(products_in_store):
@@ -27,13 +34,26 @@ def list_store_products(store_inst):
 
 
 def show_total_amount(store_inst):
-    """Display available quantity."""
+    """
+    Display the total quantity of items available in the store.
+
+    Parameters:
+    store_inst (Store): The store instance containing products.
+    """
     total_amount = store_inst.get_total_quantity()
     print(f"Total of {total_amount} items in store")
 
 
 def get_valid_product_choice(products_in_store):
-    """Prompt user for a valid product choice from the list of available products."""
+    """
+    Prompt user for a valid product choice from available products.
+
+    Parameters:
+    products_in_store (list): List of products in the store.
+
+    Returns:
+    Product: The chosen product, or None if user exits.
+    """
     while True:
         product_order = input("Which product # do you want? ")
         if product_order == "":
@@ -49,7 +69,15 @@ def get_valid_product_choice(products_in_store):
 
 
 def get_valid_quantity(product):
-    """Prompt user for a valid quantity for the selected product."""
+    """
+    Prompt user for a valid quantity for the selected product.
+
+    Parameters:
+    product (Product): The selected product.
+
+    Returns:
+    int: The valid quantity requested by the user.
+    """
     while True:
         order_amount = input(
             f"What amount do you want for '{product.name}'? ")
@@ -59,17 +87,20 @@ def get_valid_quantity(product):
         try:
             order_amount = int(order_amount)
             if order_amount <= 0:
-                print(
-                    "Quantity must be greater than zero, please try again.")
+                print("Quantity must be greater than zero, "
+                      "please try again.")
                 continue
-            if isinstance(product,
-                          products.LimitedProduct) and order_amount > product.max_quantity_per_order:
-                print(
-                    f"Cannot buy more than {product.max_quantity_per_order} units of '{product.name}' per order.")
+            if (isinstance(product, products.LimitedProduct) and
+                    order_amount > product.max_quantity_per_order):
+                print(f"Cannot buy more than "
+                      f"{product.max_quantity_per_order} units of "
+                      f"'{product.name}' per order.")
                 continue
             if product.get_quantity() < order_amount:
-                print(
-                    f"Not enough quantity available for '{product.name}'. Available: {product.get_quantity()}, Requested: {order_amount}")
+                print(f"Not enough quantity available for "
+                      f"'{product.name}'. Available: "
+                      f"{product.get_quantity()}, Requested: "
+                      f"{order_amount}")
                 continue
             return order_amount
         except ValueError:
@@ -77,18 +108,27 @@ def get_valid_quantity(product):
 
 
 def get_valid_quantity_unlimited(product):
-    """Prompt user for a valid quantity for the selected product with unlimited availability."""
+    """
+    Prompt user for a valid quantity for a non-stocked product.
+
+    Parameters:
+    product (Product): The selected non-stocked product.
+
+    Returns:
+    int: The valid quantity requested by the user.
+    """
     while True:
         order_amount = input(
-            f"What amount do you want for '{product.name}'? (Unlimited quantity available) ")
+            f"What amount do you want for '{product.name}'? "
+            f"(Unlimited quantity available) ")
         if order_amount == "":
             print("Please enter a valid quantity.")
             continue
         try:
             order_amount = int(order_amount)
             if order_amount <= 0:
-                print(
-                    "Quantity must be greater than zero, please try again.")
+                print("Quantity must be greater than zero, "
+                      "please try again.")
                 continue
             return order_amount
         except ValueError:
@@ -96,7 +136,13 @@ def get_valid_quantity_unlimited(product):
 
 
 def make_order(store_inst):
-    """Ask user to order product and quantity. Create a shopping list. Return the total payable amount."""
+    """
+    Prompt user to create an order by selecting products and
+    quantities. Display total payable amount.
+
+    Parameters:
+    store_inst (Store): The store instance containing products.
+    """
     products_in_store = store_inst.get_all_products()
     shopping_list = []
 
@@ -108,7 +154,7 @@ def make_order(store_inst):
         if product is None:
             break
 
-        # Check if product is a NonStockedProduct to allow unlimited purchases
+        # Check if product is a NonStockedProduct for unlimited
         if isinstance(product, products.NonStockedProduct):
             order_amount = get_valid_quantity_unlimited(product)
         else:
@@ -123,12 +169,17 @@ def make_order(store_inst):
             print("********")
             print(f"Order made! Total payment: ${total_payment:.2f}")
         except ValueError:
-            print(
-                "Error while making order! Quantity larger than what exists")
+            print("Error while making order! Quantity larger "
+                  "than what exists")
 
 
 def start(store_inst):
-    """Prompt user with menu options. Ask user to choose action."""
+    """
+    Display menu options and prompt user to choose an action.
+
+    Parameters:
+    store_inst (Store): The store instance containing products.
+    """
     options_table = {
         "1": list_store_products,
         "2": show_total_amount,
@@ -148,7 +199,10 @@ def start(store_inst):
 
 
 def main():
-    """Main function to run the program."""
+    """
+    Main function to initialize products, promotions, and
+    start the store application.
+    """
     # setup initial stock of inventory
     product_list = [
         products.Product("MacBook Air M2", price=1450, quantity=100),
@@ -161,8 +215,7 @@ def main():
     ]
 
     # Create promotion catalog
-    second_half_price = promotions.SecondHalfPrice(
-        "Second Half price!")
+    second_half_price = promotions.SecondHalfPrice("Second Half price!")
     third_one_free = promotions.ThirdOneFree("Third One Free!")
     thirty_percent = promotions.PercentDiscount("30% off!",
                                                 percent=30)
